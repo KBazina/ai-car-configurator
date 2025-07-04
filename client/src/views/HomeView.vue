@@ -64,13 +64,14 @@ const faqItems = [
 
     <!-- Carousel logotipa -->
     <section class="bg-white py-12">
-      <h2 class="text-2xl font-bold text-center mb-6">ODABERI SVOJU MARKU</h2>
+      <h2 class="text-2xl font-bold text-center mb-6">ODABERI SVOJU <span  class="text-[#C78A3B]">MARKU</span> </h2>
 
       <div class="max-w-6xl mx-auto">
         <Swiper :loop="true" :slides-per-view="5" :space-between="30" class="mySwiper">
           <SwiperSlide v-for="(logo, index) in logos" :key="index">
             <div class="flex items-center justify-center h-20">
-              <img :src="logo" alt="Logo" class="h-full object-contain" />
+             <img :src="logo" alt="Logo" class="h-full object-contain cursor-pointer" />
+
             </div>
           </SwiperSlide>
         </Swiper>

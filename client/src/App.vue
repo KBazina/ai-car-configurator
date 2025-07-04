@@ -7,8 +7,8 @@ import { RouterLink, RouterView } from 'vue-router'
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            >Porsche Slavonija</span
+          <span class="self-center text-2xl font-bold whitespace-nowrap dark:text-white"
+            >Porsche <span class="text-[#EAA64D]">S</span>lavonija</span
           >
         </a>
         <button
@@ -82,7 +82,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
     <RouterView />
     <footer class="bg-white shadow dark:bg-gray-900">
-      <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+      <div class="w-full max-w-screen-xl mx-auto p-4 md:py-5">
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-center sm:text-left"
         >
@@ -106,7 +106,7 @@ import { RouterLink, RouterView } from 'vue-router'
           </div>
         </div>
 
-        <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-4" />
 
         <span class="block text-sm text-gray-500 text-center dark:text-gray-400">
           © 2024 Porsche Slavonija d.o.o. — All rights reserved.
