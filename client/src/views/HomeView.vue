@@ -23,7 +23,7 @@ const toggle = (index) => {
 
 const faqItems = [
   {
-    question: 'Nudite li mogućnost zamjene starog vozila za novo??',
+    question: 'Nudite li mogućnost zamjene starog vozila za novo?',
     answer:
       'Da, nudimo uslugu procjene i otkupa vašeg starog vozila kao dio zamjene pri kupnji novog automobila. Naši stručnjaci će obaviti brzu procjenu i ponuditi poštenu tržišnu vrijednost koju možete odmah iskoristiti kao umanjenje cijene novog vozila.',
   },
@@ -117,7 +117,7 @@ const faqItems = [
             savršenog automobila za vas.
           </p>
           <button
-            class="bg-[#111827] font-semibold px-6 py-3 rounded shadow hover:bg-gray-100 transition-all"
+            class="bg-[#111827] font-semibold px-6 py-3 rounded shadow hover:bg-[#212f4d] transition-all"
           >
             💬 Razgovaraj s asistentom
           </button>
@@ -133,7 +133,9 @@ const faqItems = [
       </div>
     </section>
     <section class="bg-white py-16 px-6 sm:px-10 lg:px-32">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-10">Često postavljana pitanja</h2>
+      <h2 class="text-4xl font-bold text-gray-900 text-center mb-10">
+  ČESTO POSTAVLJENA <span class="text-orange-400">PITANJA</span>
+</h2>
       <div class="space-y-4 max-w-4xl mx-auto">
         <div
           v-for="(item, index) in faqItems"
@@ -145,7 +147,7 @@ const faqItems = [
             @click="toggle(index)"
           >
             {{ item.question }}
-            <span class="text-xl">{{ openIndex === index ? '−' : '+' }}</span>
+            <span class="text-xl">{{ openIndex === index ? '^' : '?' }}</span>
           </button>
           <div v-if="openIndex === index" class="px-6 pb-4 text-gray-600 bg-gray-50">
             {{ item.answer }}
