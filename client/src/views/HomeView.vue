@@ -63,8 +63,8 @@ const faqItems = [
     </div>
 
     <!-- Carousel logotipa -->
-    <section class="bg-white py-8">
-      <h2 class="text-2xl font-semibold text-center mb-6">Odaberi svoju marku</h2>
+    <section class="bg-white py-12">
+      <h2 class="text-2xl font-bold text-center mb-6">ODABERI SVOJU MARKU</h2>
 
       <div class="max-w-6xl mx-auto">
         <Swiper :loop="true" :slides-per-view="5" :space-between="30" class="mySwiper">
