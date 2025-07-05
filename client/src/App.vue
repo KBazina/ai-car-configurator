@@ -109,7 +109,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-4" />
 
         <span class="block text-sm text-gray-500 text-center dark:text-gray-400">
-          © 2024 Porsche Slavonija d.o.o. — All rights reserved.
+          © 2024 Porsche Slavonija d.o.o. — Sva prava zadržana
         </span>
       </div>
     </footer>
