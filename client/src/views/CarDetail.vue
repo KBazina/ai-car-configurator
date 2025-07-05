@@ -11,6 +11,7 @@ onMounted(async () => {
   auto.value = res.data
 })
 const prikaziReklamu = ref(true)
+const zatvaramReklamu = ref(false)
 </script>
 
 <template>
