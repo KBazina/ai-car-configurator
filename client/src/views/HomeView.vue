@@ -39,39 +39,38 @@ const faqItems = [
   },
   {
     question: 'Imate li servisne usluge u istoj poslovnici?',
-    answer: 'Da, imamo ovlašteni servis u sklopu poslovnice, s originalnim dijelovima i stručnim timom.',
+    answer:
+      'Da, imamo ovlašteni servis u sklopu poslovnice, s originalnim dijelovima i stručnim timom.',
   },
 ]
 </script>
 
 <template>
   <div class="w-full">
-    <!-- Hero slika s tekstom -->
-    <div class="relative w-full h-64 sm:h-80 md:h-[500px]">
-      <!-- Slika -->
-      <img :src="porscheHero" alt="Porsche vozilo" class="w-full h-full object-cover" />
+<div class="relative w-full h-64 sm:h-80 md:h-[500px]">
+  <img :src="porscheHero" alt="Porsche vozilo" class="w-full h-full object-cover" />
+  <!-- Zatamnjenje cijele slike -->
+  <div class="absolute inset-0 bg-black/40 z-0"></div>
+  <!-- Donji prijelaz -->
+  <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-b from-transparent via-black/40 to-white z-0"></div>
+  <!-- Tekst -->
+  <h1
+    class="absolute top-1/3 left-6 sm:left-10 transform -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-extrabold max-w-[50%] sm:max-w-md z-10"
+  >
+    Pravo mjesto za pronaći vaš novi auto
+  </h1>
+</div>
 
-      <!-- Tamni sloj ispod teksta -->
-      <div class="absolute inset-0 bg-black/40 z-0"></div>
-
-      <!-- Tekst iznad svega -->
-      <h1
-        class="absolute top-1/3 left-6 sm:left-10 transform -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-extrabold max-w-[50%] sm:max-w-md z-10"
-      >
-        Pravo mjesto za pronaći vaš novi auto
-      </h1>
-    </div>
-
-    <!-- Carousel logotipa -->
     <section class="bg-white py-12">
-      <h2 class="text-2xl font-bold text-center mb-6">ODABERI SVOJU <span  class="text-[#C78A3B]">MARKU</span> </h2>
+      <h2 class="text-2xl font-bold text-center mb-6">
+        ODABERI SVOJU <span class="text-[#C78A3B]">MARKU</span>
+      </h2>
 
       <div class="max-w-6xl mx-auto">
         <Swiper :loop="true" :slides-per-view="5" :space-between="30" class="mySwiper">
           <SwiperSlide v-for="(logo, index) in logos" :key="index">
             <div class="flex items-center justify-center h-20">
-             <img :src="logo" alt="Logo" class="h-full object-contain cursor-pointer" />
-
+              <img :src="logo" alt="Logo" class="h-full object-contain cursor-pointer" />
             </div>
           </SwiperSlide>
         </Swiper>
@@ -135,8 +134,8 @@ const faqItems = [
     </section>
     <section class="bg-white py-16 px-6 sm:px-10 lg:px-32">
       <h2 class="text-4xl font-bold text-gray-900 text-center mb-10">
-  ČESTO POSTAVLJENA <span class="text-orange-400">PITANJA</span>
-</h2>
+        ČESTO POSTAVLJENA <span class="text-orange-400">PITANJA</span>
+      </h2>
       <div class="space-y-4 max-w-4xl mx-auto">
         <div
           v-for="(item, index) in faqItems"
