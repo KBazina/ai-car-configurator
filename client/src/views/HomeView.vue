@@ -1,4 +1,6 @@
 <script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import { ref } from 'vue'
@@ -13,7 +15,26 @@ import seat from '@/assets/logos/seat_logo.png'
 import cupra from '@/assets/logos/cupra_logo.png'
 import lambo from '@/assets/logos/lamborghini_logo.jpg'
 
+
+const idiNaBrend = (logo) => {
+  const brend = logoMap[logo]
+  if (brend) {
+    router.push(`/cars?brand=${encodeURIComponent(brend)}`)
+  }
+}
+
+
 const logos = [audi, vw, porsche, skoda, seat, cupra, lambo]
+const logoMap = {
+  [audi]: 'Audi',
+  [vw]: 'Volkswagen',
+  [porsche]: 'Porsche',
+  [skoda]: 'Škoda',
+  [seat]: 'Seat',
+  [cupra]: 'Cupra',
+  [lambo]: 'Lamborghini'
+}
+
 
 const openIndex = ref(null)
 
@@ -47,19 +68,21 @@ const faqItems = [
 
 <template>
   <div class="w-full">
-<div class="relative w-full h-64 sm:h-80 md:h-[500px]">
-  <img :src="porscheHero" alt="Porsche vozilo" class="w-full h-full object-cover" />
-  <!-- Zatamnjenje cijele slike -->
-  <div class="absolute inset-0 bg-black/40 z-0"></div>
-  <!-- Donji prijelaz -->
-  <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-b from-transparent via-black/40 to-white z-0"></div>
-  <!-- Tekst -->
-  <h1
-    class="absolute top-1/3 left-6 sm:left-10 transform -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-extrabold max-w-[50%] sm:max-w-md z-10"
-  >
-    Pravo mjesto za pronaći vaš novi auto
-  </h1>
-</div>
+    <div class="relative w-full h-64 sm:h-80 md:h-[500px]">
+      <img :src="porscheHero" alt="Porsche vozilo" class="w-full h-full object-cover" />
+      <!-- Zatamnjenje cijele slike -->
+      <div class="absolute inset-0 bg-black/40 z-0"></div>
+      <!-- Donji prijelaz -->
+      <div
+        class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-b from-transparent via-black/40 to-white z-0"
+      ></div>
+      <!-- Tekst -->
+      <h1
+        class="absolute top-1/3 left-6 sm:left-10 transform -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-extrabold max-w-[50%] sm:max-w-md z-10"
+      >
+        Pravo mjesto za pronaći vaš novi auto
+      </h1>
+    </div>
 
     <section class="bg-white py-12">
       <h2 class="text-2xl font-bold text-center mb-6">
@@ -70,7 +93,12 @@ const faqItems = [
         <Swiper :loop="true" :slides-per-view="5" :space-between="30" class="mySwiper">
           <SwiperSlide v-for="(logo, index) in logos" :key="index">
             <div class="flex items-center justify-center h-20">
-              <img :src="logo" alt="Logo" class="h-full object-contain cursor-pointer" />
+              <img
+                :src="logo"
+                alt="Logo"
+                class="h-full object-contain cursor-pointer"
+                @click="idiNaBrend(logo)"
+              />
             </div>
           </SwiperSlide>
         </Swiper>

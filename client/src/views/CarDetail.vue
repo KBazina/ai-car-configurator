@@ -6,12 +6,19 @@ import axios from 'axios'
 const route = useRoute()
 const auto = ref(null)
 
+
+
 onMounted(async () => {
   const res = await axios.get(`http://localhost:5000/api/auti/${route.params.id}`)
   auto.value = res.data
 })
 const prikaziReklamu = ref(true)
 const zatvaramReklamu = ref(false)
+
+const rezervirajTermin = () => {
+  alert('Zahtjev za probnu vožnju poslan.')
+  prikaziReklamu.value = false
+}
 </script>
 
 <template>
@@ -55,7 +62,10 @@ const zatvaramReklamu = ref(false)
         </button>
         <h3 class="text-xl font-bold text-[#C78A3B] mb-2 mt-4">Želiš probnu vožnju?</h3>
         <p class="text-gray-800 mb-4">Rezerviraj termin i isprobaj vozilo bez obveze!</p>
-        <button class="bg-[#C78A3B] text-white px-4 py-2 rounded hover:bg-[#a76c2f] transition">
+        <button
+          @click="rezervirajTermin"
+          class="bg-[#C78A3B] text-white px-4 py-2 rounded hover:bg-[#a76c2f] transition"
+        >
           REZERVIRAJ TERMIN
         </button>
       </div>
