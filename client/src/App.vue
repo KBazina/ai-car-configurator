@@ -1,5 +1,21 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { ref } from 'vue'
+
+const kontaktRef = ref(null)
+
+const scrollToKontakt = () => {
+  if (kontaktRef.value) {
+    kontaktRef.value.scrollIntoView({ behavior: 'smooth' })
+
+    const items = kontaktRef.value.querySelectorAll('.kontakt-item')
+    items.forEach((el) => el.classList.add('blink'))
+
+    setTimeout(() => {
+      items.forEach((el) => el.classList.remove('blink'))
+    }, 3000)
+  }
+}
 </script>
 
 <template>
@@ -7,9 +23,9 @@ import { RouterLink, RouterView } from 'vue-router'
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-          <span class="self-center text-2xl font-bold whitespace-nowrap dark:text-white"
-            >Porsche <span class="text-[#EAA64D]">S</span>lavonija</span
-          >
+          <span class="self-center text-2xl font-bold whitespace-nowrap dark:text-white">
+            Porsche <span class="text-[#EAA64D]">S</span>lavonija
+          </span>
         </a>
         <button
           data-collapse-toggle="navbar-default"
@@ -69,11 +85,12 @@ import { RouterLink, RouterView } from 'vue-router'
               >
             </li>
             <li>
-              <a
-                href="#"
+              <button
+                @click="scrollToKontakt"
                 class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                >KONTAKT</a
               >
+                KONTAKT
+              </button>
             </li>
           </ul>
         </div>
@@ -81,23 +98,23 @@ import { RouterLink, RouterView } from 'vue-router'
     </nav>
 
     <RouterView />
-    <footer class="bg-white shadow dark:bg-gray-900">
+
+    <footer ref="kontaktRef" class="bg-white shadow dark:bg-gray-900">
       <div class="w-full max-w-screen-xl mx-auto p-4 md:py-5">
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-center sm:text-left"
         >
-          <!-- Lijevo: kontakt - RAZDVOJENO -->
           <div
             class="flex flex-col sm:flex-row gap-2 sm:gap-4 text-gray-500 dark:text-gray-400 text-sm"
           >
-            <div>📞 Nazovite nas: +385 35 943 243</div>
-            <div>📧 info@porscheslavonija.hr</div>
+            <div class="kontakt-item">📞 Nazovite nas: +385 35 943 243</div>
+            <div class="kontakt-item">📧 info@porscheslavonija.hr</div>
           </div>
 
-          <!-- Sredina: naziv firme -->
-          <div class="text-xl font-semibold text-gray-900 dark:text-white">Porsche Slavonija</div>
+          <div class="text-xl font-semibold text-gray-900 dark:text-white">
+            Porsche Slavonija
+          </div>
 
-          <!-- Desno: lokacija i radno vrijeme -->
           <div
             class="flex flex-col sm:flex-row gap-2 sm:gap-4 text-gray-500 dark:text-gray-400 text-sm"
           >
@@ -115,3 +132,24 @@ import { RouterLink, RouterView } from 'vue-router'
     </footer>
   </div>
 </template>
+
+<style scoped>
+.blink {
+  animation: highlight 0.6s ease-in-out 4;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: transparent;
+    color: inherit;
+  }
+  50% {
+    background-color: #f9e7c5;
+    color: #C78A3B;
+  }
+  100% {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+</style>
