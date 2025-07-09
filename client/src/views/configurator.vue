@@ -33,6 +33,41 @@
         </div>
       </div>
     </div>
+
+      <div class="fixed bottom-4 right-4 z-50">
+      <button
+        @click="prikaziChat = !prikaziChat"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full shadow-lg"
+      >
+        🤖 Pomoć AI
+      </button>
+
+      <div
+        v-if="prikaziChat"
+        class="w-[320px] max-h-[500px] bg-white border border-gray-300 shadow-xl rounded-lg mt-2 flex flex-col"
+      >
+        <div class="bg-blue-600 text-white px-4 py-2 rounded-t-lg font-semibold">AI Konfigurator</div>
+        <div class="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
+          <div v-for="(msg, i) in poruke" :key="i">
+            <div v-if="msg.rola === 'korisnik'" class="text-right">
+              <div class="inline-block bg-blue-100 text-gray-800 px-3 py-2 rounded-xl">{{ msg.tekst }}</div>
+            </div>
+            <div v-else class="text-left">
+              <div class="inline-block bg-gray-200 text-gray-800 px-3 py-2 rounded-xl">{{ msg.tekst }}</div>
+            </div>
+          </div>
+        </div>
+        <form @submit.prevent="posaljiUpit" class="p-2 border-t flex gap-2">
+          <input
+            v-model="trenutniUpit"
+            type="text"
+            placeholder="Pitaj nešto o autima..."
+            class="flex-1 border rounded px-3 py-1 text-sm focus:outline-none"
+          />
+          <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Pošalji</button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -70,6 +105,28 @@ onMounted(async () => {
     console.error('Greška prilikom dohvaćanja modela:', error)
   }
 })
+
+const prikaziChat = ref(false)
+const trenutniUpit = ref('')
+const poruke = ref([])
+
+const posaljiUpit = async () => {
+  if (!trenutniUpit.value.trim()) return
+
+  const korisnickaPoruka = { rola: 'korisnik', tekst: trenutniUpit.value }
+  poruke.value.push(korisnickaPoruka)
+
+  try {
+    const odgovor = await axios.post('http://localhost:5000/api/ai-chat', {
+      poruka: trenutniUpit.value
+    })
+    poruke.value.push({ rola: 'ai', tekst: odgovor.data.odgovor })
+  } catch (err) {
+    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri komunikaciji s AI-jem.' })
+  } finally {
+    trenutniUpit.value = ''
+  }
+}
 </script>
 
 <style scoped>
