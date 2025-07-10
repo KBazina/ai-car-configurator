@@ -179,6 +179,7 @@ import pogonpng from '@/assets/logos/pogon.png'
 
 const route = useRoute()
 const podmodel = JSON.parse(route.query.data)
+console.log(podmodel)
 
 import axios from 'axios'
 
@@ -214,10 +215,16 @@ const posaljiMail = async () => {
 }
 
 
-const odabranaMotorizacija = ref('')
+let odabranaMotorizacija = ref('')
 const odabranaOprema = ref([])
-const korak = ref(1)
+let korak = ref(1)
 const osnovnaCijena = ref(podmodel.cijena)
+
+if(podmodel.preporucena_motorizacija){
+  odabranaMotorizacija.value=podmodel.preporucena_motorizacija,
+  odabranaOprema.value=podmodel.preporucena_oprema,
+  korak.value = 3
+}
 
 const ukupnaCijena = computed(() => {
   const dodatakOpreme = odabranaOprema.value.reduce((sum, op) => sum + op.cijena, 0)
@@ -225,6 +232,7 @@ const ukupnaCijena = computed(() => {
     odabranaMotorizacija.value?.nadoplata > 0 ? odabranaMotorizacija.value.nadoplata : 0
   return osnovnaCijena.value + dodatakOpreme + nadoplataMotora
 })
+
 
 const updateCijena = () => {
   // Trigerira se automatski preko computed

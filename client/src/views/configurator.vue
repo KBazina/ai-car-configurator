@@ -117,16 +117,32 @@ const posaljiUpit = async () => {
   poruke.value.push(korisnickaPoruka)
 
   try {
-    const odgovor = await axios.post('http://localhost:5000/api/ai-chat', {
-      poruka: trenutniUpit.value
+    const odgovor = await axios.post('http://localhost:5000/api/ai-konfiguracija', {
+      zahtjev: trenutniUpit.value
     })
-    poruke.value.push({ rola: 'ai', tekst: odgovor.data.odgovor })
+
+    const konfiguracija = odgovor.data.konfiguracija
+    console.log(konfiguracija)
+    // Formatiraj AI odgovor u prikazivu poruku
+    const prikaz = `
+${konfiguracija}
+    `.trim()
+
+    poruke.value.push({ rola: 'ai', tekst: prikaz })
+    router.push({
+  name: "confcar", 
+  query: {
+    data: JSON.stringify(konfiguracija)
+  }
+});
   } catch (err) {
-    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri komunikaciji s AI-jem.' })
+    console.error(err)
+    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri generiranju konfiguracije.' })
   } finally {
     trenutniUpit.value = ''
   }
 }
+
 </script>
 
 <style scoped>
