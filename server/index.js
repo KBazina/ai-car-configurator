@@ -184,7 +184,7 @@ app.post("/api/ai-konfiguracija", async (req, res) => {
         id: p._id,
       })),
     }));
-    console.log("MODELI KOJI SE ŠALJU AI-u:", podaci.map(m => m.naziv));
+
 
     // 3. Pripremi poruke za AI: system + povijest + novi user zahtjev
     const messages = [
@@ -260,7 +260,7 @@ Ne odgovaraj na druge teme osim konfiguracije.
     res.json({ done: false, odgovor });
   } catch (error) {
     console.error("AI greška:", error);
-    res.status(500).json({ message: "Greška u AI konfiguraciji." });
+    res.status(500).json({ message: "NEDAM VIŠE PARA ZA AI." });
   }
 });
 

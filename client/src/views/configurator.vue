@@ -82,9 +82,9 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
-
+const route = useRoute()
 const router = useRouter()
 const modeli = ref([])
 const odabraniModel = ref(null)
@@ -105,9 +105,11 @@ const idiNaConfCar = (model) => {
     }
   })
 }
-
 // Dohvati sve modele iz backend API-ja
 onMounted(async () => {
+   if (route.query.prikaziChat === 'true') {
+    prikaziChat.value = true
+  }
   try {
     const response = await axios.get('http://localhost:5000/api/modeli') // prilagodi ako endpoint nije ovajs
     modeli.value = response.data
@@ -185,7 +187,7 @@ const posaljiUpit = async () => {
     }
   } catch (err) {
     console.error(err);
-    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri generiranju konfiguracije.' });
+    poruke.value.push({ rola: 'ai', tekst: '⚠️ Nedam više para za AI.' });
   } finally {
     loading.value = false;
     trenutniUpit.value = '';

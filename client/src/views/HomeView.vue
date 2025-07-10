@@ -23,6 +23,13 @@ const idiNaBrend = (logo) => {
   }
 }
 
+const idiNaKonfigurator = () => {
+  router.push({
+    name: 'configurator', 
+    query: { prikaziChat: true }
+  })
+}
+
 
 const logos = [audi, vw, porsche, skoda, seat, cupra, lambo]
 const logoMap = {
@@ -145,6 +152,7 @@ const faqItems = [
             savršenog automobila za vas.
           </p>
           <button
+          @click="idiNaKonfigurator"
             class="bg-[#111827] font-semibold px-6 py-3 rounded shadow hover:bg-[#212f4d] transition-all"
           >
             💬 Razgovaraj s asistentom
