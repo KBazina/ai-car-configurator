@@ -129,23 +129,36 @@ const getPovijestPoruka = () => {
     }));
 }
 
+function extractJSON(text) {
+  try {
+    // Pronađi dio između ```json ... ```
+    const match = text.match(/```json([\s\S]*?)```/i);
+    if (match) {
+      return JSON.parse(match[1].trim());
+    }
+
+    // Ako nema ```json, pokušaj direktno parsati
+    return JSON.parse(text.trim());
+  } catch {
+    return null;
+  }
+}
+
+
 const posaljiUpit = async () => {
   if (!trenutniUpit.value.trim() || loading.value) return;
 
   loading.value = true;
 
-  // Dodaj korisničku poruku u chat
   poruke.value.push({ rola: 'korisnik', tekst: trenutniUpit.value });
 
   try {
-    // Pošalji zahtjev i povijest chat poruka
     const odgovor = await axios.post('http://localhost:5000/api/ai-konfiguracija', {
       zahtjev: trenutniUpit.value,
       povijest: getPovijestPoruka()
     });
 
     if (odgovor.data.done) {
-      // AI je završio i vratio JSON konfiguraciju
       poruke.value.push({ rola: 'ai', tekst: 'Konfiguracija je spremna.' });
 
       router.push({
@@ -155,8 +168,20 @@ const posaljiUpit = async () => {
         }
       });
     } else {
-      // AI šalje dodatni tekst (pitanja ili objašnjenja)
-      poruke.value.push({ rola: 'ai', tekst: odgovor.data.odgovor });
+      const jsonKonfig = extractJSON(odgovor.data.odgovor);
+
+      if (jsonKonfig && jsonKonfig.naziv && jsonKonfig.preporucena_motorizacija) {
+        poruke.value.push({ rola: 'ai', tekst: 'Konfiguracija je prepoznata i spremna.' });
+
+        router.push({
+          name: "confcar",
+          query: {
+            data: JSON.stringify(jsonKonfig)
+          }
+        });
+      } else {
+        poruke.value.push({ rola: 'ai', tekst: odgovor.data.odgovor });
+      }
     }
   } catch (err) {
     console.error(err);
@@ -166,6 +191,9 @@ const posaljiUpit = async () => {
     trenutniUpit.value = '';
   }
 };
+
+
+
 
 </script>
 
