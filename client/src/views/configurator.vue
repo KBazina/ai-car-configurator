@@ -34,7 +34,7 @@
       </div>
     </div>
 
-      <div class="fixed bottom-4 right-4 z-50">
+    <div class="fixed bottom-4 right-4 z-50">
       <button
         @click="prikaziChat = !prikaziChat"
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full shadow-lg"
@@ -57,19 +57,28 @@
             </div>
           </div>
         </div>
+
+        <div v-if="loading" class="text-left inline-block bg-gray-200 text-gray-800 px-3 py-2 rounded-xl italic">
+          AI piše<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+        </div>
+
         <form @submit.prevent="posaljiUpit" class="p-2 border-t flex gap-2">
           <input
             v-model="trenutniUpit"
             type="text"
             placeholder="Pitaj nešto o autima..."
             class="flex-1 border rounded px-3 py-1 text-sm focus:outline-none"
+            :disabled="loading"
           />
-          <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Pošalji</button>
+          <button :disabled="loading || !trenutniUpit.trim()" type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">
+            Pošalji
+          </button>
         </form>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
@@ -80,6 +89,7 @@ const router = useRouter()
 const modeli = ref([])
 const odabraniModel = ref(null)
 const podmodeli = ref(null)
+const loading = ref(false)
 
 const odaberiModel = async (model) => {
   odabraniModel.value = model
@@ -110,43 +120,77 @@ const prikaziChat = ref(false)
 const trenutniUpit = ref('')
 const poruke = ref([])
 
-const posaljiUpit = async () => {
-  if (!trenutniUpit.value.trim()) return
+const getPovijestPoruka = () => {
+  return poruke.value
+    .filter(m => m.rola === "korisnik" || m.rola === "ai")
+    .map(m => ({
+      role: m.rola === "korisnik" ? "user" : "assistant",
+      content: m.tekst
+    }));
+}
 
-  const korisnickaPoruka = { rola: 'korisnik', tekst: trenutniUpit.value }
-  poruke.value.push(korisnickaPoruka)
+const posaljiUpit = async () => {
+  if (!trenutniUpit.value.trim() || loading.value) return;
+
+  loading.value = true;
+
+  // Dodaj korisničku poruku u chat
+  poruke.value.push({ rola: 'korisnik', tekst: trenutniUpit.value });
 
   try {
+    // Pošalji zahtjev i povijest chat poruka
     const odgovor = await axios.post('http://localhost:5000/api/ai-konfiguracija', {
-      zahtjev: trenutniUpit.value
-    })
+      zahtjev: trenutniUpit.value,
+      povijest: getPovijestPoruka()
+    });
 
-    const konfiguracija = odgovor.data.konfiguracija
-    console.log(konfiguracija)
-    // Formatiraj AI odgovor u prikazivu poruku
-    const prikaz = `
-${konfiguracija}
-    `.trim()
+    if (odgovor.data.done) {
+      // AI je završio i vratio JSON konfiguraciju
+      poruke.value.push({ rola: 'ai', tekst: 'Konfiguracija je spremna.' });
 
-    poruke.value.push({ rola: 'ai', tekst: prikaz })
-    router.push({
-  name: "confcar", 
-  query: {
-    data: JSON.stringify(konfiguracija)
-  }
-});
+      router.push({
+        name: "confcar",
+        query: {
+          data: JSON.stringify(odgovor.data.konfiguracija)
+        }
+      });
+    } else {
+      // AI šalje dodatni tekst (pitanja ili objašnjenja)
+      poruke.value.push({ rola: 'ai', tekst: odgovor.data.odgovor });
+    }
   } catch (err) {
-    console.error(err)
-    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri generiranju konfiguracije.' })
+    console.error(err);
+    poruke.value.push({ rola: 'ai', tekst: '⚠️ Došlo je do greške pri generiranju konfiguracije.' });
   } finally {
-    trenutniUpit.value = ''
+    loading.value = false;
+    trenutniUpit.value = '';
   }
-}
+};
 
 </script>
 
 <style scoped>
 img {
   pointer-events: none;
+}
+@keyframes blink {
+  0%, 20% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+.dots span {
+  animation-name: blink;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
 }
 </style>

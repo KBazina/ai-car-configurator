@@ -11,7 +11,7 @@
       <p class="text-xl text-gray-700">
         Početna cijena:
         <span class="text-[#C78A3B] font-semibold">
-          {{ ukupnaCijena.toLocaleString('de-DE') }} €
+          {{Number(ukupnaCijena).toLocaleString('de-DE') }} €
         </span>
       </p>
     </div>
@@ -56,7 +56,7 @@
           >
             Nadoplata:
             <span class="text-[#C78A3B] font-semibold">
-              {{ motor.nadoplata.toLocaleString('de-DE') }}
+              {{ Number(motor.nadoplata).toLocaleString('de-DE') }}
             </span>
             €
           </p>
@@ -91,7 +91,7 @@
           />
           <div>
             <p class="font-medium">{{ op.naziv }}</p>
-            <p class="text-sm text-gray-500">{{ op.cijena.toLocaleString('de-DE') }} €</p>
+            <p class="text-sm text-gray-500">{{ Number(op.cijena).toLocaleString('de-DE') }} €</p>
           </div>
         </label>
       </div>
@@ -128,14 +128,14 @@
           <h5 class="font-semibold">Dodatna oprema:</h5>
           <ul class="list-disc ml-6">
             <li v-for="(op, idx) in odabranaOprema" :key="idx">
-              {{ op.naziv }} – {{ op.cijena.toLocaleString('de-DE') }} €
+              {{ op.naziv }} – {{ Number(op.cijena).toLocaleString('de-DE') }} €
             </li>
           </ul>
         </div>
 
         <p class="mt-6 text-xl font-bold">
           Ukupna cijena:
-          <span class="text-[#C78A3B]"> {{ ukupnaCijena.toLocaleString('de-DE') }} € </span>
+          <span class="text-[#C78A3B]"> {{ Number(ukupnaCijena).toLocaleString('de-DE') }} € </span>
         </p>
       </div>
       <div class="mt-10 text-center">

@@ -96,6 +96,7 @@ app.get("/api/auti/:id", async (req, res) => {
   }
 });
 
+
 // Slanje konfiguracije na email kao PDF
 app.post("/api/posalji-konfiguraciju", async (req, res) => {
   const { email, model, motorizacija, oprema, cijena } = req.body;
@@ -165,84 +166,104 @@ app.post("/api/posalji-konfiguraciju", async (req, res) => {
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post("/api/ai-konfiguracija", async (req, res) => {
-  const { zahtjev } = req.body; // npr. "Želim Audi A4 s dizelskim motorom"
+  const { zahtjev, povijest } = req.body; // povijest je niz poruka {role, content}
 
   try {
-    // 1. Dohvati konfiguratore iz MongoDB
+    // 1. Dohvati sve modele iz MongoDB
     const modeli = await Konfigurator.find();
 
-    // 2. Formatiraj podatke kao tekst za AI
-    const podaci = modeli.map((m) => {
-      return {
-        naziv: m.naziv,
-        podmodeli: m.podmodeli.map((p) => ({
-          naziv: p.naziv,
-          cijena: p.cijena,
-          motorizacije: p.motorizacije,
-          oprema: p.oprema,
-        })),
-      };
-    });
+    // 2. Formatiraj podatke za AI
+    const podaci = modeli.map((m) => ({
+      naziv: m.naziv,
+      podmodeli: m.podmodeli.map((p) => ({
+        naziv: p.naziv,
+        cijena: p.cijena,
+        motorizacije: p.motorizacije,
+        oprema: p.oprema,
+        slika: p.slika,
+        id: p._id,
+      })),
+    }));
+    console.log("MODELI KOJI SE ŠALJU AI-u:", podaci.map(m => m.naziv));
 
-    // 3. Pošalji sve OpenAI-u
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `
-Ti si AI koji preporučuje automobile na temelju korisničkog zahtjeva.
+    // 3. Pripremi poruke za AI: system + povijest + novi user zahtjev
+    const messages = [
+      {
+        role: "system",
+        content: `
+Ti si AI koji preporučuje automobile na temelju korisničkog zahtjeva i vodi višekratni razgovor da prikupi potrebne informacije.
+Prvo postavljaj korisniku pitanja kako bi bolje razumio što želi, ne vraćaj odmah konfiguraciju.
+Kada prikupiš sve potrebne podatke, vrati isključivo JSON u točnom formatu bez komentara, bez pozdrava.
 
-Koristi isključivo sljedeće podatke o modelima i opremi:\n\n${JSON.stringify(
-            podaci
-          ).slice(0, 12000)}.
-Vrati isključivo JSON u ovom točnom formatu  (bez dodatnih komentara, bez objašnjenja, bez pozdrava), te pripazi da svi kljucevi u JSON budu stringovi:
+Koristi isključivo ove podatke o modelima i opremi:
+
+${JSON.stringify(podaci)}
+
+JSON format treba biti:
 
 {
-cijena: (tu stavi pocetnu cijenu tog podmodela bez ikakvih dodataka),
-motorizacije: (unesi SVE ponudene motorizacije za ovaj podmodel),
-naziv:(naziv podmodela),
-oprema:(iz mongaDB uzmes podatke od ovog podmodela za svu opremu podmodela),
-slika:(pripazi da nastavak bude .png i slika nek bude identicna kao u mongoDB, pazi na mala slova),
-id:(uzmes iz mongaDB),
-preporucena_oprema:(tu stavi listu opreme koju si ti preporucio),
-preporucena_motorizacija:{
-nadoplata: 
-naziv: 
-pogon: 
-snaga_kW: 
-tip: 
-_id: 
-}(znaci samo stavi objekt motorizacije koju si izabrao, a ove podatke sve imas u mongoDB)
+  "cijena": number(ovo je pocetna modela bez iceg drugog),
+  "motorizacije": array,
+  "naziv": string,
+  "oprema": array,
+  "slika": string,
+  "id": string,
+  "preporucena_oprema": array,
+  "preporucena_motorizacija": {
+    "nadoplata": number,
+    "naziv": string,
+    "pogon": string,
+    "snaga_kW": number,
+    "tip": string,
+    "_id": string
+  }
+}
 
-`.trim(),
-        },
-        {
-          role: "user", 
-          content: zahtjev,
-        },
-      ],
+Ne odgovaraj na druge teme osim konfiguracije.
+        `.trim()
+      },
+      ...povijest,
+      { role: "user", content: zahtjev }
+    ];
+
+    // 4. Pozovi OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages
     });
 
     let odgovor = response.choices[0].message.content.trim();
-      if (odgovor.startsWith("```")) {
+
+    // Očisti eventualne ``` oznake
+    if (odgovor.startsWith("```")) {
       odgovor = odgovor.replace(/```json|```/g, "").trim();
     }
 
+    // 5. Provjeri je li odgovor JSON s konfiguracijom
     try {
       const parsed = JSON.parse(odgovor);
-      res.json({ konfiguracija: parsed });
-    } catch (err) {
-      console.error("AI je vratio neispravan JSON:", odgovor, err);
-      res
-        .status(500)
-        .json({ message: "AI je vratio neispravan odgovor. Pokušaj ponovno." });
+
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        parsed.cijena !== undefined &&
+        parsed.preporucena_motorizacija !== undefined
+      ) {
+        // Gotova konfiguracija
+        return res.json({ done: true, konfiguracija: parsed, odgovor: "" });
+      }
+    } catch {
+      // Nije JSON konfiguracija, vraćamo normalan AI odgovor
     }
+
+    // 6. Vraćamo AI tekst kao nastavak razgovora
+    res.json({ done: false, odgovor });
   } catch (error) {
     console.error("AI greška:", error);
     res.status(500).json({ message: "Greška u AI konfiguraciji." });
   }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
