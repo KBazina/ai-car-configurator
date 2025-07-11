@@ -191,7 +191,7 @@ app.post("/api/ai-konfiguracija", async (req, res) => {
       {
         role: "system",
         content: `
-Ti si AI koji preporučuje automobile na temelju korisničkog zahtjeva i vodi višekratni razgovor da prikupi potrebne informacije.
+Ti si AI koji priča na hrvatski i preporučuje automobile na temelju korisničkog zahtjeva i vodi višekratni razgovor da prikupi potrebne informacije.
 Prvo postavljaj korisniku pitanja kako bi bolje razumio što želi, ne vraćaj odmah konfiguraciju.
 Kada prikupiš sve potrebne podatke, vrati isključivo JSON u točnom formatu bez komentara, bez pozdrava.
 
