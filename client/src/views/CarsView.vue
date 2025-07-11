@@ -62,7 +62,9 @@
     <!-- GLAVNA LISTA AUTA -->
     <div class="">
       <h2 class="text-3xl font-bold text-gray-900 mb-10 text-center mt-6">Rabljena vozila</h2>
-
+      <div v-if="filtriraniAuti.length === 0" class="text-center text-gray-600 py-12 text-lg">
+        Nema vozila koja odgovaraju odabranim filterima.
+      </div>
       <div
         v-for="(red, index) in grupiraniRedovi"
         :key="index"
@@ -83,33 +85,50 @@
                 :alt="`${auto.marka} ${auto.model}`"
                 class="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"
               />
-              <h3 class="mt-4 text-md font-semibold text-gray-800">{{ auto.marka }} {{ auto.model }}</h3>
+              <h3 class="mt-4 text-md font-semibold text-gray-800">
+                {{ auto.marka }} {{ auto.model }}
+              </h3>
               <p class="text-sm text-gray-600">Godina: {{ auto.godina }} | {{ auto.gorivo }}</p>
-              <p class="text-sm text-gray-600">Kilometraža: {{ Number(auto.kilometraza).toLocaleString('de-DE') }} km</p>
-              <p class="mt-1 text-lg font-medium text-gray-900">{{ Number(auto.cijena).toLocaleString('de-DE') }} €</p>
+              <p class="text-sm text-gray-600">
+                Kilometraža: {{ Number(auto.kilometraza).toLocaleString('de-DE') }} km
+              </p>
+              <p class="mt-1 text-lg font-medium text-gray-900">
+                {{ Number(auto.cijena).toLocaleString('de-DE') }} €
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-<div v-if="superPrilike.length > 0" class="bg-orange-100 py-12">
-  <h2 class="text-2xl font-bold text-center text-orange-700 mb-8">🔥 Super prilike za Porsche vozila 🔥</h2>
-  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    <div
-      v-for="(auto, idx) in superPrilike"
-      :key="idx"
-      class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
-      @click="idiNaDetalje(auto._id)"
-    >
-      <img :src="auto.slika" :alt="auto.marka" class="w-full h-48 object-cover rounded-md mb-3" />
-      <h3 class="text-lg font-semibold text-gray-800">{{ auto.marka }} {{ auto.model }}</h3>
-      <p class="text-sm text-gray-600">{{ auto.godina }} | {{ auto.gorivo }}</p>
-      <p class="text-sm text-gray-600">{{ Number(auto.kilometraza).toLocaleString('de-DE') }} km</p>
-      <p class="text-lg font-bold text-orange-700 mt-2">{{ Number(auto.cijena).toLocaleString('de-DE') }} €</p>
+    <div v-if="superPrilike.length > 0" class="bg-orange-100 py-12">
+      <h2 class="text-2xl font-bold text-center text-orange-700 mb-8">
+        🔥 Super prilike za Porsche vozila 🔥
+      </h2>
+      <div
+        class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+      >
+        <div
+          v-for="(auto, idx) in superPrilike"
+          :key="idx"
+          class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
+          @click="idiNaDetalje(auto._id)"
+        >
+          <img
+            :src="auto.slika"
+            :alt="auto.marka"
+            class="w-full h-48 object-cover rounded-md mb-3"
+          />
+          <h3 class="text-lg font-semibold text-gray-800">{{ auto.marka }} {{ auto.model }}</h3>
+          <p class="text-sm text-gray-600">{{ auto.godina }} | {{ auto.gorivo }}</p>
+          <p class="text-sm text-gray-600">
+            {{ Number(auto.kilometraza).toLocaleString('de-DE') }} km
+          </p>
+          <p class="text-lg font-bold text-orange-700 mt-2">
+            {{ Number(auto.cijena).toLocaleString('de-DE') }} €
+          </p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   </div>
 </template>
 
@@ -119,7 +138,6 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 const route = useRoute()
-
 
 const auti = ref([])
 const filtriraniAuti = ref([])
@@ -141,16 +159,14 @@ onMounted(async () => {
   const res = await axios.get('http://localhost:5000/api/auti')
   auti.value = res.data
   filtriraniAuti.value = res.data
-  superPrilike.value = res.data
-  .filter((auto) => auto.marka.toLowerCase() === 'porsche')
-  .slice(0, 4)
+  superPrilike.value = res.data.filter((auto) => auto.marka.toLowerCase() === 'porsche').slice(0, 4)
 
   updateBrojKolona()
   window.addEventListener('resize', updateBrojKolona)
- if (route.query.brand) {
-  filteri.value.marka = route.query.brand
-  filtriraj() 
-}
+  if (route.query.brand) {
+    filteri.value.marka = route.query.brand
+    filtriraj()
+  }
 })
 
 const updateBrojKolona = () => {
@@ -180,8 +196,10 @@ const filtriraj = () => {
       (!filteri.value.godinaDo || auto.godina <= filteri.value.godinaDo) &&
       (!filteri.value.snaga || auto.snaga >= filteri.value.snaga) &&
       (!filteri.value.gorivo || auto.gorivo === filteri.value.gorivo) &&
-      (!filteri.value.marka || auto.marka.toLowerCase().includes(filteri.value.marka.toLowerCase())) &&
-      (!filteri.value.model || auto.model.toLowerCase().includes(filteri.value.model.toLowerCase())) &&
+      (!filteri.value.marka ||
+        auto.marka.toLowerCase().includes(filteri.value.marka.toLowerCase())) &&
+      (!filteri.value.model ||
+        auto.model.toLowerCase().includes(filteri.value.model.toLowerCase())) &&
       (!filteri.value.mjenjac || auto.mjenjac === filteri.value.mjenjac)
     )
   })
