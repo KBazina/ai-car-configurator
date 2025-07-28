@@ -132,19 +132,22 @@ const getPovijestPoruka = () => {
 }
 
 function extractJSON(text) {
-  try {
-    // Pronađi dio između ```json ... ```
-    const match = text.match(/```json([\s\S]*?)```/i);
-    if (match) {
-      return JSON.parse(match[1].trim());
-    }
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
 
-    // Ako nema ```json, pokušaj direktno parsati
-    return JSON.parse(text.trim());
+  if (start === -1 || end === -1 || start >= end) {
+    return null;
+  }
+
+  const jsonStr = text.slice(start, end + 1);
+
+  try {
+    return JSON.parse(jsonStr);
   } catch {
     return null;
   }
 }
+
 
 
 const posaljiUpit = async () => {

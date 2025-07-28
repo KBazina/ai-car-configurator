@@ -228,7 +228,7 @@ Ne odgovaraj na druge teme osim konfiguracije.
 
     // 4. Pozovi OpenAI API
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4.1",
       messages
     });
 
