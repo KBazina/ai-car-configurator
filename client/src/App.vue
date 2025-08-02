@@ -127,7 +127,7 @@ onMounted(() => {
           </span>
         </a>
 
-        <!-- Hamburger gumb -->
+        <!-- Hamburger -->
         <button
           @click="prikaziMeni = !prikaziMeni"
           type="button"
@@ -146,18 +146,12 @@ onMounted(() => {
             <li><a href="/about" class="nav-link" @click="prikaziMeni = false">O NAMA</a></li>
             <li><a href="/cars" class="nav-link" @click="prikaziMeni = false">AUTI</a></li>
             <li><a href="/configurator" class="nav-link" @click="prikaziMeni = false">KONFIGURATOR</a></li>
-            <li>
-              <button @click="scrollToKontakt; prikaziMeni = false" class="nav-link">KONTAKT</button>
-            </li>
+            <li><button @click="scrollToKontakt; prikaziMeni = false" class="nav-link">KONTAKT</button></li>
             <li v-if="!isLoggedIn">
-              <button @click="toggleAuthPopup; prikaziMeni = false" class="nav-link flex items-center gap-1">
-                🔐 Prijava
-              </button>
+              <button @click="toggleAuthPopup" class="nav-link flex items-center gap-1">🔐 Prijava</button>
             </li>
             <li v-else class="relative">
-              <button @click="prikaziMeni = !prikaziMeni" class="nav-link flex items-center gap-1">
-                👤 {{ ime }}
-              </button>
+              <button @click="prikaziMeni = !prikaziMeni" class="nav-link flex items-center gap-1">👤 {{ ime }}</button>
               <div
                 v-if="prikaziMeni"
                 class="absolute right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow-lg z-50"
