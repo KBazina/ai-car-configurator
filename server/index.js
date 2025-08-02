@@ -5,29 +5,23 @@ const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const PDFDocument = require("pdfkit");
 const OpenAI = require("openai");
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const Korisnik = require('./models/Korisnik')
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Korisnik = require('./models/Korisnik');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Spoji se na MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log("✅ Spojeno na MongoDB"))
   .catch((err) => console.error("❌ Greška pri spajanju na MongoDB:", err));
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tajna123'
+const JWT_SECRET = process.env.JWT_SECRET || 'tajna123';
 
-
-
-// Sheme i modeli
 const autoSchema = new mongoose.Schema({
   marka: String,
   model: String,
@@ -70,60 +64,52 @@ const konfiguratorSchema = new mongoose.Schema({
   ],
 });
 
-const Konfigurator = mongoose.model(
-  "Konfigurator",
-  konfiguratorSchema,
-  "configurator_auti"
-);
+const Konfigurator = mongoose.model("Konfigurator", konfiguratorSchema, "configurator_auti");
 const Auto = mongoose.model("Auto", autoSchema, "rabljeni_auti");
 
-// Rute za dohvat auti i konfiguratora
 app.get("/api/auti", async (req, res) => {
   const auti = await Auto.find();
   res.json(auti);
 });
 
 app.post('/api/register', async (req, res) => {
-  const { ime, email, lozinka } = req.body
-
+  const { ime, email, lozinka } = req.body;
   try {
-    const postoji = await Korisnik.findOne({ email })
-    if (postoji) return res.status(400).json({ message: 'Email je već registriran.' })
+    const postoji = await Korisnik.findOne({ email });
+    if (postoji) return res.status(400).json({ message: 'Email je već registriran.' });
 
-    const hashed = await bcrypt.hash(lozinka, 10)
+    const hashed = await bcrypt.hash(lozinka, 10);
+    const novaUloga = email === process.env.ADMIN_EMAIL ? 'admin' : 'user';
 
-    const novaUloga = email === process.env.ADMIN_EMAIL ? 'admin' : 'user'
+    const novi = new Korisnik({ ime, email, lozinka: hashed, uloga: novaUloga });
+    await novi.save();
 
-    const novi = new Korisnik({ ime, email, lozinka: hashed, uloga: novaUloga })
-    await novi.save()
-
-    res.status(201).json({ message: 'Korisnik registriran.' })
+    res.status(201).json({ message: 'Korisnik registriran.' });
   } catch (err) {
-    res.status(500).json({ message: 'Greška pri registraciji.' })
+    res.status(500).json({ message: 'Greška pri registraciji.' });
   }
-})
+});
 
 app.post('/api/login', async (req, res) => {
-  const { email, lozinka } = req.body
-
+  const { email, lozinka } = req.body;
   try {
-    const korisnik = await Korisnik.findOne({ email })
-    if (!korisnik) return res.status(400).json({ message: 'Krivi podaci.' })
+    const korisnik = await Korisnik.findOne({ email });
+    if (!korisnik) return res.status(400).json({ message: 'Krivi podaci.' });
 
-    const isValid = await bcrypt.compare(lozinka, korisnik.lozinka)
-    if (!isValid) return res.status(400).json({ message: 'Krivi podaci.' })
+    const isValid = await bcrypt.compare(lozinka, korisnik.lozinka);
+    if (!isValid) return res.status(400).json({ message: 'Krivi podaci.' });
 
     const token = jwt.sign(
       { id: korisnik._id, uloga: korisnik.uloga, ime: korisnik.ime },
       JWT_SECRET,
       { expiresIn: '7d' }
-    )
+    );
 
-    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime })
+    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime });
   } catch (err) {
-    res.status(500).json({ message: 'Greška pri prijavi.' })
+    res.status(500).json({ message: 'Greška pri prijavi.' });
   }
-})
+});
 
 app.get("/api/modeli", async (req, res) => {
   try {
@@ -137,17 +123,13 @@ app.get("/api/modeli", async (req, res) => {
 app.get("/api/auti/:id", async (req, res) => {
   try {
     const auto = await Auto.findById(req.params.id);
-    if (!auto) {
-      return res.status(404).json({ message: "Auto nije pronađen" });
-    }
+    if (!auto) return res.status(404).json({ message: "Auto nije pronađen" });
     res.json(auto);
   } catch (error) {
     res.status(500).json({ message: "Greška pri dohvaćanju auta" });
   }
 });
 
-
-// Slanje konfiguracije na email kao PDF
 app.post("/api/posalji-konfiguraciju", async (req, res) => {
   const { email, model, motorizacija, oprema, cijena } = req.body;
 
@@ -187,16 +169,10 @@ app.post("/api/posalji-konfiguraciju", async (req, res) => {
     }
   });
 
-  // PDF sadržaj
-  doc
-    .fontSize(18)
-    .fillColor("#C78A3B")
-    .text(`Konfiguracija za Audi ${model}`, { align: "center" });
+  doc.fontSize(18).fillColor("#C78A3B").text(`Konfiguracija za Audi ${model}`, { align: "center" });
   doc.moveDown();
   doc.fontSize(12).fillColor("black");
-  doc.text(
-    `Motorizacija: ${motorizacija.naziv} (${motorizacija.snaga_kW} kW, ${motorizacija.tip}, ${motorizacija.pogon})`
-  );
+  doc.text(`Motorizacija: ${motorizacija.naziv} (${motorizacija.snaga_kW} kW, ${motorizacija.tip}, ${motorizacija.pogon})`);
   doc.moveDown();
   doc.text("Dodatna oprema:");
   if (oprema.length) {
@@ -212,17 +188,51 @@ app.post("/api/posalji-konfiguraciju", async (req, res) => {
   doc.end();
 });
 
-// ✅ OPENAI INTEGRACIJA – AI zna sve konfiguratore
+// 🔹 SLANJE MAILA IZ KONTAKT FORME
+app.post('/api/send-mail', async (req, res) => {
+  const { poruka } = req.body;
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) return res.status(401).json({ message: 'Nedostaje token.' });
+
+  try {
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const korisnik = await Korisnik.findById(decoded.id);
+    if (!korisnik) return res.status(401).json({ message: 'Korisnik nije pronađen.' });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Kontakt forma - ${korisnik.ime}" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: "Poruka s kontakt forme",
+      text: `Od: ${korisnik.email}\n\nPoruka:\n${poruka}`,
+    });
+
+    res.status(200).json({ message: "Poruka uspješno poslana." });
+  } catch (err) {
+    console.error("Greška pri slanju kontakt poruke:", err);
+    res.status(500).json({ message: "Greška pri slanju poruke." });
+  }
+});
+
+
+// ✅ OPENAI INTEGRACIJA
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post("/api/ai-konfiguracija", async (req, res) => {
-  const { zahtjev, povijest } = req.body; // povijest je niz poruka {role, content}
+  const { zahtjev, povijest } = req.body;
 
   try {
-    // 1. Dohvati sve modele iz MongoDB
     const modeli = await Konfigurator.find();
-
-    // 2. Formatiraj podatke za AI
     const podaci = modeli.map((m) => ({
       naziv: m.naziv,
       podmodeli: m.podmodeli.map((p) => ({
@@ -235,8 +245,6 @@ app.post("/api/ai-konfiguracija", async (req, res) => {
       })),
     }));
 
-
-    // 3. Pripremi poruke za AI: system + povijest + novi user zahtjev
     const messages = [
       {
         role: "system",
@@ -252,7 +260,7 @@ ${JSON.stringify(podaci)}
 JSON format treba biti:
 
 {
-  "cijena": number(ovo je pocetna modela bez iceg drugog),
+  "cijena": number,
   "motorizacije": array,
   "naziv": string,
   "oprema": array,
@@ -268,45 +276,35 @@ JSON format treba biti:
     "_id": string
   }
 }
-
-Ne odgovaraj na druge teme osim konfiguracije.
-        `.trim()
+        `.trim(),
       },
       ...povijest,
-      { role: "user", content: zahtjev }
+      { role: "user", content: zahtjev },
     ];
 
-    // 4. Pozovi OpenAI API
     const response = await openai.chat.completions.create({
       model: "gpt-4.1",
-      messages
+      messages,
     });
 
     let odgovor = response.choices[0].message.content.trim();
 
-    // Očisti eventualne ``` oznake
     if (odgovor.startsWith("```")) {
       odgovor = odgovor.replace(/```json|```/g, "").trim();
     }
 
-    // 5. Provjeri je li odgovor JSON s konfiguracijom
     try {
       const parsed = JSON.parse(odgovor);
-
       if (
         parsed &&
-        typeof parsed === 'object' &&
+        typeof parsed === "object" &&
         parsed.cijena !== undefined &&
         parsed.preporucena_motorizacija !== undefined
       ) {
-        // Gotova konfiguracija
         return res.json({ done: true, konfiguracija: parsed, odgovor: "" });
       }
-    } catch {
-      // Nije JSON konfiguracija, vraćamo normalan AI odgovor
-    }
+    } catch { }
 
-    // 6. Vraćamo AI tekst kao nastavak razgovora
     res.json({ done: false, odgovor });
   } catch (error) {
     console.error("AI greška:", error);
@@ -314,8 +312,5 @@ Ne odgovaraj na druge teme osim konfiguracije.
   }
 });
 
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`✅ Server radi na http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`✅ Server radi na http://localhost:${PORT}`));

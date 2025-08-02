@@ -12,6 +12,7 @@ const lozinka = ref('')
 const ime = ref('')
 const greska = ref('')
 const prikaziMeni = ref(false)
+const prikaziDropdown = ref(false)
 
 const scrollToKontakt = () => {
   if (kontaktRef.value) {
@@ -104,7 +105,7 @@ const odjaviSe = () => {
   localStorage.removeItem('ime')
   isLoggedIn.value = false
   ime.value = ''
-  prikaziMeni.value = false
+  prikaziDropdown.value = false
 }
 
 onMounted(() => {
@@ -126,8 +127,6 @@ onMounted(() => {
             Porsche <span class="text-[#EAA64D]">S</span>lavonija
           </span>
         </a>
-
-        <!-- Hamburger -->
         <button
           @click="prikaziMeni = !prikaziMeni"
           type="button"
@@ -138,22 +137,20 @@ onMounted(() => {
               d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-
-        <!-- Navigacija -->
         <div :class="['w-full md:block md:w-auto', prikaziMeni ? 'block' : 'hidden']" id="navbar-default">
           <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <li><a href="/" class="nav-link" @click="prikaziMeni = false">NASLOVNA</a></li>
             <li><a href="/about" class="nav-link" @click="prikaziMeni = false">O NAMA</a></li>
             <li><a href="/cars" class="nav-link" @click="prikaziMeni = false">AUTI</a></li>
             <li><a href="/configurator" class="nav-link" @click="prikaziMeni = false">KONFIGURATOR</a></li>
-            <li><button @click="scrollToKontakt; prikaziMeni = false" class="nav-link">KONTAKT</button></li>
+            <li><button @click="scrollToKontakt(); prikaziMeni = false" class="nav-link">KONTAKT</button></li>
             <li v-if="!isLoggedIn">
-              <button @click="toggleAuthPopup" class="nav-link flex items-center gap-1">🔐 Prijava</button>
+              <button @click="toggleAuthPopup" class="nav-link">🔐 Prijava</button>
             </li>
             <li v-else class="relative">
-              <button @click="prikaziMeni = !prikaziMeni" class="nav-link flex items-center gap-1">👤 {{ ime }}</button>
+              <button @click="prikaziDropdown = !prikaziDropdown" class="nav-link">👤 {{ ime }}</button>
               <div
-                v-if="prikaziMeni"
+                v-if="prikaziDropdown"
                 class="absolute right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow-lg z-50"
               >
                 <button
