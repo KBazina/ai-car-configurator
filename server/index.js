@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const PDFDocument = require("pdfkit");
 const OpenAI = require("openai");
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const Korisnik = require('./models/Korisnik')
+
 
 const app = express();
 app.use(cors());
@@ -18,6 +22,10 @@ mongoose
   })
   .then(() => console.log("✅ Spojeno na MongoDB"))
   .catch((err) => console.error("❌ Greška pri spajanju na MongoDB:", err));
+
+const JWT_SECRET = process.env.JWT_SECRET || 'tajna123'
+
+
 
 // Sheme i modeli
 const autoSchema = new mongoose.Schema({
@@ -74,6 +82,48 @@ app.get("/api/auti", async (req, res) => {
   const auti = await Auto.find();
   res.json(auti);
 });
+
+app.post('/api/register', async (req, res) => {
+  const { ime, email, lozinka } = req.body
+
+  try {
+    const postoji = await Korisnik.findOne({ email })
+    if (postoji) return res.status(400).json({ message: 'Email je već registriran.' })
+
+    const hashed = await bcrypt.hash(lozinka, 10)
+
+    const novaUloga = email === process.env.ADMIN_EMAIL ? 'admin' : 'user'
+
+    const novi = new Korisnik({ ime, email, lozinka: hashed, uloga: novaUloga })
+    await novi.save()
+
+    res.status(201).json({ message: 'Korisnik registriran.' })
+  } catch (err) {
+    res.status(500).json({ message: 'Greška pri registraciji.' })
+  }
+})
+
+app.post('/api/login', async (req, res) => {
+  const { email, lozinka } = req.body
+
+  try {
+    const korisnik = await Korisnik.findOne({ email })
+    if (!korisnik) return res.status(400).json({ message: 'Krivi podaci.' })
+
+    const isValid = await bcrypt.compare(lozinka, korisnik.lozinka)
+    if (!isValid) return res.status(400).json({ message: 'Krivi podaci.' })
+
+    const token = jwt.sign(
+      { id: korisnik._id, uloga: korisnik.uloga, ime: korisnik.ime },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime })
+  } catch (err) {
+    res.status(500).json({ message: 'Greška pri prijavi.' })
+  }
+})
 
 app.get("/api/modeli", async (req, res) => {
   try {
