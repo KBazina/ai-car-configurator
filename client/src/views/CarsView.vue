@@ -59,9 +59,36 @@
       </form>
     </div>
 
+    <div v-if="favoriti.length > 0" class="max-w-7xl mx-auto px-4 mt-10">
+  <h2 class="text-2xl font-bold text-orange-600 mb-6">Favoriti</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div
+      v-for="auto in favoriti"
+      :key="auto._id"
+      @click="idiNaDetalje(auto._id)"
+      class="bg-white border border-gray-200 rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
+    >
+      <img :src="auto.slika" class="w-full h-48 object-cover rounded mb-3" />
+      <h3 class="text-lg font-semibold text-gray-800">{{ auto.marka }} {{ auto.model }}</h3>
+      <p class="text-sm text-gray-600">{{ auto.godina }} | {{ auto.gorivo }}</p>
+      <p class="text-sm text-gray-600">
+        {{ Number(auto.kilometraza).toLocaleString('de-DE') }} km
+      </p>
+      <p class="text-lg font-bold text-orange-700 mt-2">
+        {{ Number(auto.cijena).toLocaleString('de-DE') }} €
+      </p>
+    </div>
+  </div>
+</div>
+<div v-if="favoriti.length > 0" class="max-w-7xl mx-auto my-12 flex items-center text-gray-400">
+  <div class="flex-grow border-t border-gray-300"></div>
+  <span class="mx-4 text-sm font-medium text-gray-500">Sva rabljena vozila</span>
+  <div class="flex-grow border-t border-gray-300"></div>
+</div>
+
     <!-- GLAVNA LISTA AUTA -->
-    <div class="">
-      <h2 class="text-3xl font-bold text-gray-900 mb-10 text-center mt-6">Rabljena vozila</h2>
+    <div ref="rabljenaVozila">
+      <h2 v-if="favoriti.length == 0" class="text-3xl font-bold text-gray-900 mb-10 text-center mt-6">Rabljena vozila</h2>
       <div v-if="filtriraniAuti.length === 0" class="text-center text-gray-600 py-12 text-lg">
         Nema vozila koja odgovaraju odabranim filterima.
       </div>
@@ -135,14 +162,18 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+
 const route = useRoute()
+const router = useRouter()
 
 const auti = ref([])
 const filtriraniAuti = ref([])
 const superPrilike = ref([])
+const favoriti = ref([])
 const brojKolona = ref(1)
+const rabljenaVozila = ref(null)
+
 const filteri = ref({
   godinaOd: '',
   godinaDo: '',
@@ -153,19 +184,39 @@ const filteri = ref({
   mjenjac: '',
 })
 
-const router = useRouter()
-
 onMounted(async () => {
   const res = await axios.get('http://localhost:5000/api/auti')
   auti.value = res.data
   filtriraniAuti.value = res.data
-  superPrilike.value = res.data.filter((auto) => auto.marka.toLowerCase() === 'porsche').slice(0, 4)
+  superPrilike.value = res.data
+    .filter((auto) => auto.marka.toLowerCase() === 'porsche')
+    .slice(0, 4)
 
   updateBrojKolona()
   window.addEventListener('resize', updateBrojKolona)
+
   if (route.query.brand) {
     filteri.value.marka = route.query.brand
     filtriraj()
+  }
+
+  // Dohvaćanje favorita
+  const storedUser = localStorage.getItem('user')
+  const token = localStorage.getItem('token')
+  if (storedUser && token) {
+    try {
+      const user = JSON.parse(storedUser)
+      const favRes = await axios.post(
+        'http://localhost:5000/api/favoriti/svi',
+        { email: user.email },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      favoriti.value = favRes.data
+    } catch (err) {
+      console.error('Greška pri dohvaćanju favorita:', err)
+    }
   }
 })
 
@@ -203,7 +254,12 @@ const filtriraj = () => {
       (!filteri.value.mjenjac || auto.mjenjac === filteri.value.mjenjac)
     )
   })
+
+  if (rabljenaVozila.value) {
+    rabljenaVozila.value.scrollIntoView({ behavior: 'smooth' })
+  }
 }
+
 </script>
 
 <style scoped>

@@ -105,7 +105,7 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime });
+    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime, id: korisnik._id, email: korisnik.email });
   } catch (err) {
     res.status(500).json({ message: 'Greška pri prijavi.' });
   }
@@ -311,6 +311,57 @@ JSON format treba biti:
     res.status(500).json({ message: "NEDAM VIŠE PARA ZA AI." });
   }
 });
+
+app.post('/api/favoriti/check', async (req, res) => {
+  const { email, autoId } = req.body;
+
+  try {
+    const korisnik = await Korisnik.findOne({ email }).populate('favoriti');
+    if (!korisnik) return res.status(404).json({ message: 'Korisnik nije pronađen' });
+
+    const jeFavorit = korisnik.favoriti.some(fav => fav.equals(autoId));
+    res.json({ jeFavorit });
+  } catch (err) {
+    console.error('Greška pri provjeri favorita:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+});
+
+app.post('/api/favoriti/toggle', async (req, res) => {
+  const { email, autoId } = req.body;
+
+  try {
+    const korisnik = await Korisnik.findOne({ email });
+    if (!korisnik) return res.status(404).json({ message: 'Korisnik nije pronađen' });
+
+    const index = korisnik.favoriti.findIndex(fav => fav.toString() === autoId);
+
+    if (index !== -1) {
+      korisnik.favoriti.splice(index, 1); // ukloni
+    } else {
+      korisnik.favoriti.push(autoId); // dodaj
+    }
+
+    await korisnik.save();
+    res.json({ message: 'Favoriti ažurirani.' });
+  } catch (err) {
+    console.error('Greška pri ažuriranju favorita:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+});
+
+app.post('/api/favoriti/svi', async (req, res) => {
+  try {
+    const { email } = req.body
+    const korisnik = await Korisnik.findOne({ email }).populate('favoriti')
+    if (!korisnik) return res.status(404).json({ message: 'Korisnik nije pronađen' })
+
+    res.json(korisnik.favoriti)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju favorita:', err)
+    res.status(500).json({ message: 'Greška na serveru' })
+  }
+})
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server radi na http://localhost:${PORT}`));

@@ -88,7 +88,10 @@ const prijaviSe = async () => {
       lozinka: lozinka.value,
     })
     localStorage.setItem('token', res.data.token)
-    localStorage.setItem('user', JSON.stringify({ email: email.value }))
+    localStorage.setItem('user', JSON.stringify({
+  email: res.data.email,
+  id: res.data.id
+}))
     isLoggedIn.value = true
     prikaziLoginPopup.value = false
     window.location.reload()
