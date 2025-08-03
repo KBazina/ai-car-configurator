@@ -170,9 +170,9 @@ onMounted(async () => {
             </div>
           </div>
 
-          <iframe
+         <iframe
             class="w-full h-64 rounded-md shadow"
-            src="https://www.google.com/maps/embed?pb=!1m18..."
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13392.086909505966!2d18.80296318507902!3d45.30197205176515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x475c8b16db862ec5%3A0xa7ede5b5e1661f07!2sUl.%20Brune%20Bu%C5%A1i%C4%87a%2020%2C%2032100%2C%20Vinkovci!5e0!3m2!1shr!2shr!4v1751717631752!5m2!1shr!2shr"
             allowfullscreen=""
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"

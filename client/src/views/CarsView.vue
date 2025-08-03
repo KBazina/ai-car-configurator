@@ -265,7 +265,7 @@ const filtriraj = () => {
 <style scoped>
 
 .super-gradient {
-  background: linear-gradient(to right, #ea944e 0%, #ffffff 60%);
+  background: linear-gradient(to right, #ea944e 0%, #ffffff 80%);
 }
 
 .input {
