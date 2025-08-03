@@ -88,25 +88,26 @@ const prijaviSe = async () => {
       lozinka: lozinka.value,
     })
     localStorage.setItem('token', res.data.token)
-    localStorage.setItem('ime', res.data.ime)
+    localStorage.setItem('user', JSON.stringify({ email: email.value }))
     isLoggedIn.value = true
-    ime.value = res.data.ime
     prikaziLoginPopup.value = false
-    email.value = ''
-    lozinka.value = ''
-    greska.value = ''
+    window.location.reload()
   } catch (err) {
     greska.value = err.response?.data?.message || 'Greška pri prijavi.'
   }
 }
 
+
+
 const odjaviSe = () => {
   localStorage.removeItem('token')
-  localStorage.removeItem('ime')
+  localStorage.removeItem('user')
   isLoggedIn.value = false
   ime.value = ''
   prikaziDropdown.value = false
+  window.location.reload()
 }
+
 
 onMounted(() => {
   const stored = localStorage.getItem('token')

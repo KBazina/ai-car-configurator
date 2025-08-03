@@ -1,25 +1,52 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
 const auto = ref(null)
 
+// Korisnik i token
+const token = localStorage.getItem('token')
+console.log('TOKEN iz localStorage:', token)
 
+const user = ref(null)
+const loadUser = () => {
+  try {
+    const stored = localStorage.getItem('user')
+    user.value = stored ? JSON.parse(stored) : null
+    console.log('Korisnik (loadUser):', user.value)
+  } catch (e) {
+    console.error('Greška pri parsiranju korisnika:', e)
+    user.value = null
+  }
+}
+const isLoggedIn = computed(() => !!user.value?.email)
+console.log('isLoggedIn computed:', isLoggedIn.value)
 
-onMounted(async () => {
-  const res = await axios.get(`http://localhost:5000/api/auti/${route.params.id}`)
-  auto.value = res.data
-})
+// Reklama
 const prikaziReklamu = ref(true)
-const zatvaramReklamu = ref(false)
 
 const rezervirajTermin = () => {
   alert('Zahtjev za probnu vožnju poslan.')
   prikaziReklamu.value = false
 }
+
+// Dohvati podatke
+onMounted(async () => {
+  try {
+    loadUser()
+    window.addEventListener('storage', loadUser)
+
+    const res = await axios.get(`http://localhost:5000/api/auti/${route.params.id}`)
+    auto.value = res.data
+    console.log('Auto podaci:', auto.value)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju auta:', err)
+  }
+})
 </script>
+
 
 <template>
   <div v-if="auto">
@@ -32,7 +59,7 @@ const rezervirajTermin = () => {
         />
 
         <div>
-          <h1 class="text-3xl font-bold mb-4">{{ auto.marka }} {{ auto.model }}</h1>
+          <h1 class="text-3xl font-bold mb-4">{{ auto.marka }} {{ auto.model }} <span v-if="isLoggedIn">★</span></h1>
           <p class="text-gray-700 text-lg mb-2">Godina: {{ auto.godina }}</p>
           <p class="text-gray-700 text-lg mb-2">
             Kilometraža: {{ Number(auto.kilometraza).toLocaleString() }} km
