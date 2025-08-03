@@ -127,7 +127,7 @@
         </div>
       </div>
     </div>
-    <div v-if="superPrilike.length > 0" class="bg-orange-100 py-12">
+    <div v-if="superPrilike.length > 0" class="super-gradient py-12">
       <h2 class="text-2xl font-bold text-center text-orange-700 mb-8">
         🔥 Super prilike za Porsche vozila 🔥
       </h2>
@@ -263,6 +263,11 @@ const filtriraj = () => {
 </script>
 
 <style scoped>
+
+.super-gradient {
+  background: linear-gradient(to right, #ea944e 0%, #ffffff 60%);
+}
+
 .input {
   @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
 }
