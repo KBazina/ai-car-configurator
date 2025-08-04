@@ -90,7 +90,8 @@ const prijaviSe = async () => {
     localStorage.setItem('token', res.data.token)
     localStorage.setItem('user', JSON.stringify({
   email: res.data.email,
-  id: res.data.id
+  id: res.data.id,
+  uloga: res.data.uloga
 }))
     isLoggedIn.value = true
     prikaziLoginPopup.value = false

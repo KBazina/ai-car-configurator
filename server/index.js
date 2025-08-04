@@ -105,7 +105,7 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime, id: korisnik._id, email: korisnik.email });
+    res.json({ token, uloga: korisnik.uloga, ime: korisnik.ime, id: korisnik._id, email: korisnik.email, uloga: korisnik.uloga });
   } catch (err) {
     res.status(500).json({ message: 'Greška pri prijavi.' });
   }
@@ -129,6 +129,19 @@ app.get("/api/auti/:id", async (req, res) => {
     res.status(500).json({ message: "Greška pri dohvaćanju auta" });
   }
 });
+
+app.delete('/api/auti/:id', async (req, res) => {
+  try {
+    const auto = await Auto.findByIdAndDelete(req.params.id)
+    if (!auto) {
+      return res.status(404).json({ poruka: 'Auto nije pronađen' })
+    }
+    res.json({ poruka: 'Auto uspješno izbrisan' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ poruka: 'Greška na serveru' })
+  }
+})
 
 app.post("/api/posalji-konfiguraciju", async (req, res) => {
   const { email, model, motorizacija, oprema, cijena } = req.body;

@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
 const auto = ref(null)
+
 
 const token = localStorage.getItem('token')
 const user = ref(null)
@@ -18,6 +19,7 @@ const loadUser = async () => {
     user.value = null
   }
 }
+const jeAdmin = computed(() => user.value?.uloga === 'admin')
 
 
 const isLoggedIn = computed(() => !!user.value?.email)
@@ -79,9 +81,30 @@ onMounted(async () => {
   }
 })
 
+const router = useRoute()
+const navigate = useRouter()
+
+const izbrisiAuto = async () => {
+  if (!auto.value || !token) return
+
+  const potvrda = confirm('Jeste li sigurni da želite izbrisati ovo vozilo?')
+  if (!potvrda) return
+
+  try {
+    await axios.delete(`http://localhost:5000/api/auti/${auto.value._id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    alert('Vozilo je uspješno izbrisano.')
+    navigate.push('/cars') // ili '/' ako je to početna stranica s popisom auta
+  } catch (err) {
+    console.error('Greška pri brisanju vozila:', err)
+    alert('Došlo je do pogreške prilikom brisanja vozila.')
+  }
+}
+
 </script>
 
-<template>
+<template>  
   <div v-if="auto">
     <div class="max-w-6xl mx-auto p-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -116,7 +139,15 @@ onMounted(async () => {
           <p class="text-2xl font-semibold text-[#C78A3B] mt-4 text-right mr-8">
             {{ Number(auto.cijena).toLocaleString() }} €
           </p>
+             <button
+  v-if="jeAdmin"
+  @click="izbrisiAuto"
+  class="mt-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+>
+  Izbriši vozilo
+</button>
         </div>
+     
       </div>
     </div>
 
