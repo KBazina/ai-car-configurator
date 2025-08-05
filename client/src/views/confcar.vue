@@ -155,6 +155,14 @@
         </button>
         <p v-if="porukaPoslana" class="text-green-600 mt-2">Konfiguracija je poslana!</p>
         <p v-if="greska" class="text-red-600 mt-2">Došlo je do greške. Pokušaj ponovno.</p>
+        <button
+  v-if="jePrijavljen"
+  @click="spremiKonfiguraciju"
+  class="bg-green-600 text-white px-6 py-2 mt-4 rounded shadow hover:bg-green-700 transition"
+>
+  Spremi konfiguraciju
+</button>
+<p v-if="porukaSpremanja" class="text-green-600 mt-2">Konfiguracija spremljena!</p>
       </div>
 
       <div class="text-center mt-6">
@@ -171,15 +179,25 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 import snagapng from '@/assets/logos/snaga.png'
 import motoricpng from '@/assets/logos/motoric.png'
 import pogonpng from '@/assets/logos/pogon.png'
 
+const porukaSpremanja = ref(false)
+const user = ref(null)
+const jePrijavljen = ref(false)
+
 const route = useRoute()
+
+console.log('🔍 Podaci primljeni kroz router.query:', route.query.data)
 const podmodel = JSON.parse(route.query.data)
-console.log(podmodel)
+console.log("parsirani model: ", podmodel)
+
+
+
+
 
 import axios from 'axios'
 
@@ -220,9 +238,15 @@ const odabranaOprema = ref([])
 let korak = ref(1)
 const osnovnaCijena = ref(podmodel.cijena)
 
-if(podmodel.preporucena_motorizacija){
-  odabranaMotorizacija.value=podmodel.preporucena_motorizacija,
-  odabranaOprema.value=podmodel.preporucena_oprema,
+if (podmodel.preporucena_motorizacija) {
+  odabranaMotorizacija.value = podmodel.motorizacije.find(
+    m => m._id === podmodel.preporucena_motorizacija._id
+  )
+
+  odabranaOprema.value = podmodel.oprema.filter(op =>
+    podmodel.preporucena_oprema?.some(sel => sel._id === op._id)
+  )
+
   korak.value = 3
 }
 
@@ -232,6 +256,36 @@ const ukupnaCijena = computed(() => {
     odabranaMotorizacija.value?.nadoplata > 0 ? odabranaMotorizacija.value.nadoplata : 0
   return osnovnaCijena.value + dodatakOpreme + nadoplataMotora
 })
+onMounted(() => {
+  const stored = localStorage.getItem('user')
+  if (stored) {
+    user.value = JSON.parse(stored)
+    jePrijavljen.value = true
+  }
+})
+
+const spremiKonfiguraciju = async () => {
+  if (!user.value) return
+  porukaSpremanja.value = false
+console.log(podmodel)
+const podaci = {
+  userId: user.value.id,
+  konfiguracija: {
+    podmodelNaziv: podmodel.naziv,
+    motorizacija: odabranaMotorizacija.value,
+    oprema: odabranaOprema.value,
+    cijena: ukupnaCijena.value
+  }
+}
+
+
+  try {
+    await axios.post('http://localhost:5000/api/konfiguracije/spremi', podaci)
+    porukaSpremanja.value = true
+  } catch (err) {
+    console.error('Greška pri spremanju konfiguracije', err)
+  }
+}
 
 
 const updateCijena = () => {

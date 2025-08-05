@@ -143,6 +143,31 @@ app.delete('/api/auti/:id', async (req, res) => {
   }
 })
 
+app.post('/api/konfiguracije/spremi', async (req, res) => {
+  try {
+    const { userId, konfiguracija } = req.body
+
+    if (!userId || !konfiguracija || !konfiguracija.podmodelNaziv) {
+      return res.status(400).json({ message: 'Nedostaju podaci.' })
+    }
+
+    const korisnik = await Korisnik.findById(userId)
+    if (!korisnik) {
+      return res.status(404).json({ message: 'Korisnik nije pronađen.' })
+    }
+
+    korisnik.konfiguracije.push({ konfiguracija })
+    await korisnik.save()
+
+    res.status(200).json({ message: 'Konfiguracija spremljena.' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Greška na serveru.' })
+  }
+})
+
+
+
 app.post("/api/posalji-konfiguraciju", async (req, res) => {
   const { email, model, motorizacija, oprema, cijena } = req.body;
 
@@ -373,6 +398,28 @@ app.post('/api/favoriti/svi', async (req, res) => {
   } catch (err) {
     console.error('Greška pri dohvaćanju favorita:', err)
     res.status(500).json({ message: 'Greška na serveru' })
+  }
+})
+
+app.get('/api/konfiguracije/:korisnikId', async (req, res) => {
+  try {
+    const korisnik = await Korisnik.findById(req.params.korisnikId)
+    res.json(korisnik.konfiguracije)
+  } catch {
+    res.status(500).json({ message: 'Greška kod dohvaćanja konfiguracija' })
+  }
+})
+
+app.delete('/api/konfiguracije/:korisnikId/:konfId', async (req, res) => {
+  try {
+    const korisnik = await Korisnik.findById(req.params.korisnikId)
+    korisnik.konfiguracije = korisnik.konfiguracije.filter(
+      (k) => k._id.toString() !== req.params.konfId
+    )
+    await korisnik.save()
+    res.json({ message: 'Konfiguracija obrisana' })
+  } catch {
+    res.status(500).json({ message: 'Greška kod brisanja konfiguracije' })
   }
 })
 

@@ -144,7 +144,7 @@ const izbrisiAuto = async () => {
   @click="izbrisiAuto"
   class="mt-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
 >
-  Izbriši vozilo
+  Vozilo prodano
 </button>
         </div>
      
