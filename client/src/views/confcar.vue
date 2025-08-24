@@ -289,6 +289,5 @@ const podaci = {
 
 
 const updateCijena = () => {
-  // Trigerira se automatski preko computed
 }
 </script>
