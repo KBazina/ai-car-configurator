@@ -225,7 +225,7 @@ const posaljiUpit = async () => {
     }
   } catch (err) {
     console.error(err)
-    poruke.value.push({ rola: 'ai', tekst: '⚠️ Nedam više para za AI.' })
+    poruke.value.push({ rola: 'ai', tekst: 'Nedam više para za AI.' })
   } finally {
     loading.value = false
     trenutniUpit.value = ''

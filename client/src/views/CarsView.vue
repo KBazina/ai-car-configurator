@@ -1,6 +1,5 @@
 <template>
   <div class="bg-white">
-    <!-- FILTERI -->
     <div class="w-full bg-gray-100 shadow-sm py-6 px-4 sm:px-8">
       <form
         @submit.prevent="filtriraj"
@@ -86,7 +85,6 @@
   <div class="flex-grow border-t border-gray-300"></div>
 </div>
 
-    <!-- GLAVNA LISTA AUTA -->
     <div ref="rabljenaVozila">
       <h2 v-if="favoriti.length == 0" class="text-3xl font-bold text-gray-900 mb-10 text-center mt-6">Rabljena vozila</h2>
       <div v-if="filtriraniAuti.length === 0" class="text-center text-gray-600 py-12 text-lg">

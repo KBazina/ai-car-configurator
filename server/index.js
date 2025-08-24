@@ -18,8 +18,8 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ Spojeno na MongoDB"))
-  .catch((err) => console.error("❌ Greška pri spajanju na MongoDB:", err));
+  .then(() => console.log(" Spojeno na MongoDB"))
+  .catch((err) => console.error(" Greška pri spajanju na MongoDB:", err));
 
 const JWT_SECRET = process.env.JWT_SECRET || "tajna123";
 
@@ -247,7 +247,7 @@ app.post("/api/posalji-konfiguraciju", async (req, res) => {
   doc.end();
 });
 
-// 🔹 SLANJE MAILA IZ KONTAKT FORME
+
 app.post("/api/send-mail", async (req, res) => {
   const { poruka } = req.body;
   const authHeader = req.headers.authorization;
@@ -284,7 +284,7 @@ app.post("/api/send-mail", async (req, res) => {
   }
 });
 
-// ✅ OPENAI INTEGRACIJA
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post("/api/ai-konfiguracija", async (req, res) => {
@@ -400,9 +400,9 @@ app.post("/api/favoriti/toggle", async (req, res) => {
     );
 
     if (index !== -1) {
-      korisnik.favoriti.splice(index, 1); // ukloni
+      korisnik.favoriti.splice(index, 1); 
     } else {
-      korisnik.favoriti.push(autoId); // dodaj
+      korisnik.favoriti.push(autoId); 
     }
 
     await korisnik.save();

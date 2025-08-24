@@ -193,7 +193,6 @@ onMounted(() => {
       </div>
     </footer>
 
-    <!-- LOGIN POPUP -->
     <div v-if="prikaziLoginPopup" class="popup">
       <div class="popup-inner">
         <button @click="zatvoriLoginPopup" class="popup-close">✖</button>
@@ -211,7 +210,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- REGISTER POPUP -->
     <div v-if="prikaziRegisterPopup" class="popup">
       <div class="popup-inner">
         <button @click="zatvoriRegisterPopup" class="popup-close">✖</button>

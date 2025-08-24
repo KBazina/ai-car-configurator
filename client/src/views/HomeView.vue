@@ -77,13 +77,10 @@ const faqItems = [
   <div class="w-full">
     <div class="relative w-full h-64 sm:h-80 md:h-[500px]">
       <img :src="porscheHero" alt="Porsche vozilo" class="w-full h-full object-cover" />
-      <!-- Zatamnjenje cijele slike -->
       <div class="absolute inset-0 bg-black/40 z-0"></div>
-      <!-- Donji prijelaz -->
       <div
         class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-b from-transparent via-black/40 to-white z-0"
       ></div>
-      <!-- Tekst -->
       <h1
         class="absolute top-1/3 left-6 sm:left-10 transform -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-extrabold max-w-[50%] sm:max-w-md z-10"
       >
@@ -113,7 +110,6 @@ const faqItems = [
     </section>
     <section class="bg-gray-50 py-16 px-6">
       <div class="flex flex-col md:flex-row items-center gap-10 mx-6 sm:mx-10 lg:mx-32">
-        <!-- Lijeva strana: tekst -->
         <div class="md:w-1/2 w-full">
           <h2 class="text-3xl font-bold text-gray-900 mb-4">Zašto odabrati Porsche Slavonija?</h2>
           <p class="text-gray-700 mb-6">
@@ -129,7 +125,6 @@ const faqItems = [
           </ul>
         </div>
 
-        <!-- Desna strana: slika -->
         <div class="md:w-1/2 w-full">
           <img
             :src="poslovnica"
@@ -140,9 +135,7 @@ const faqItems = [
       </div>
     </section>
     <section class="relative w-full bg-orange-400">
-      <!-- Sadržaj preko slike -->
       <div class="max-w-7xl mx-auto px-4 py-16 grid md:grid-cols-2 items-center relative z-10">
-        <!-- Tekstualni dio -->
         <div class="text-white relative z-10">
           <h2 class="text-3xl sm:text-4xl font-bold mb-4">
             Trebate pomoć pri konfiguraciji vozila?
@@ -160,7 +153,6 @@ const faqItems = [
         </div>
       </div>
 
-      <!-- Slika u pozadini s fadeom prema lijevoj strani -->
       <div class="absolute inset-0 z-0">
         <img :src="AI_assist" alt="Virtualni asistent" class="w-full h-full object-cover" />
         <div

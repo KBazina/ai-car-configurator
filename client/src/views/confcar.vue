@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-white py-12 px-6">
-    <!-- Naslov -->
     <div class="max-w-3xl mx-auto text-center">
       <img
         :src="`/configurator/${podmodel.slika}`"
@@ -16,7 +15,6 @@
       </p>
     </div>
 
-    <!-- KORAK 1 - Motorizacija -->
     <div v-if="korak === 1" class="max-w-5xl mx-auto mt-10">
       <h3 class="text-lg font-semibold mb-4">Odaberi motorizaciju:</h3>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,7 +71,6 @@
       </div>
     </div>
 
-    <!-- KORAK 2 - Oprema -->
     <div v-if="korak === 2" class="max-w-4xl mx-auto mt-10">
       <h3 class="text-xl font-bold mb-4 text-center">Odaberi dodatnu opremu</h3>
       <div class="grid sm:grid-cols-2 gap-4">
@@ -112,7 +109,6 @@
       </div>
     </div>
 
-    <!-- KORAK 3 - Pregled -->
     <div v-if="korak === 3" class="max-w-3xl mx-auto mt-10">
       <h3 class="text-2xl font-bold mb-4 text-center">Tvoja konfiguracija</h3>
 
