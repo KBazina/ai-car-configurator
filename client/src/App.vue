@@ -91,7 +91,8 @@ const prijaviSe = async () => {
     localStorage.setItem('user', JSON.stringify({
   email: res.data.email,
   id: res.data.id,
-  uloga: res.data.uloga
+  uloga: res.data.uloga,
+  ime:res.data.ime
 }))
     isLoggedIn.value = true
     prikaziLoginPopup.value = false
