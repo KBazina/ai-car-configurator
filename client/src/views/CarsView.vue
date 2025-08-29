@@ -183,7 +183,7 @@ const filteri = ref({
 })
 
 onMounted(async () => {
-  const res = await axios.get('http://localhost:5000/api/auti')
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/auti`)
   auti.value = res.data
   filtriraniAuti.value = res.data
   superPrilike.value = res.data
@@ -198,14 +198,14 @@ onMounted(async () => {
     filtriraj()
   }
 
-  // Dohvaćanje favorita
+
   const storedUser = localStorage.getItem('user')
   const token = localStorage.getItem('token')
   if (storedUser && token) {
     try {
       const user = JSON.parse(storedUser)
       const favRes = await axios.post(
-        'http://localhost:5000/api/favoriti/svi',
+        `${import.meta.env.VITE_API_URL}/api/favoriti/svi`,
         { email: user.email },
         {
           headers: { Authorization: `Bearer ${token}` },

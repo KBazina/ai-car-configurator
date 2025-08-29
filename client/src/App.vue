@@ -65,7 +65,7 @@ const registrirajSe = async () => {
     return
   }
   try {
-    await axios.post('http://localhost:5000/api/register', {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/register`, {
       ime: ime.value,
       email: email.value,
       lozinka: lozinka.value,
@@ -83,7 +83,7 @@ const registrirajSe = async () => {
 
 const prijaviSe = async () => {
   try {
-    const res = await axios.post('http://localhost:5000/api/login', {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/login`, {
       email: email.value,
       lozinka: lozinka.value,
     })

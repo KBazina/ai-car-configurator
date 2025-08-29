@@ -35,7 +35,7 @@ const toggleFavorit = async () => {
 
   try {
     await axios.post(
-      'http://localhost:5000/api/favoriti/toggle',
+      `${import.meta.env.VITE_API_URL}/api/favoriti/toggle`,
       {
         email: user.value.email,
         autoId: auto.value._id
@@ -46,7 +46,7 @@ const toggleFavorit = async () => {
         }
       }
     )
-    jeFavorit.value = !jeFavorit.value // 🔁 lokalno okreni stanje
+    jeFavorit.value = !jeFavorit.value 
   } catch (err) {
     console.error('Greška pri dodavanju/uklanjanju iz favorita:', err)
   }
@@ -58,12 +58,12 @@ onMounted(async () => {
     await loadUser()
     window.addEventListener('storage', loadUser)
 
-    const res = await axios.get(`http://localhost:5000/api/auti/${route.params.id}`)
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/auti/${route.params.id}`)
     auto.value = res.data
 
     if (user.value) {
       const favRes = await axios.post(
-        'http://localhost:5000/api/favoriti/check',
+        `${import.meta.env.VITE_API_URL}/api/favoriti/check`,
         {
           email: user.value.email,
           autoId: route.params.id
@@ -91,11 +91,11 @@ const izbrisiAuto = async () => {
   if (!potvrda) return
 
   try {
-    await axios.delete(`http://localhost:5000/api/auti/${auto.value._id}`, {
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/auti/${auto.value._id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     alert('Vozilo je uspješno izbrisano.')
-    navigate.push('/cars') // ili '/' ako je to početna stranica s popisom auta
+    navigate.push('/cars') 
   } catch (err) {
     console.error('Greška pri brisanju vozila:', err)
     alert('Došlo je do pogreške prilikom brisanja vozila.')

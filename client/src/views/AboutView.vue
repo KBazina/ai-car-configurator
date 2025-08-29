@@ -118,7 +118,7 @@ const posaljiUpit = () => {
 
 const posaljiMail = async () => {
   try {
-    const res = await axios.post('http://localhost:5000/api/send-mail', {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/send-mail`, {
       poruka: poruka.value
     }, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }

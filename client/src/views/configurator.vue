@@ -139,7 +139,7 @@ const idiNaConfCar = (model) => {
 const dohvatiKonfiguracije = async () => {
   if (!korisnik?.id) return
   try {
-    const res = await axios.get(`http://localhost:5000/api/konfiguracije/${korisnik.id}`)
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/konfiguracije/${korisnik.id}`)
     konfiguracije.value = res.data
     console.log(konfiguracije)
   } catch (err) {
@@ -182,7 +182,7 @@ const nastaviKonfiguraciju = async (konf) => {
 
 const obrisiKonfiguraciju = async (id) => {
   try {
-    await axios.delete(`http://localhost:5000/api/konfiguracije/${korisnik.id}/${id}`)
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/konfiguracije/${korisnik.id}/${id}`)
     await dohvatiKonfiguracije()
   } catch (err) {
     console.error('Greška kod brisanja konfiguracije', err)
@@ -207,7 +207,7 @@ const posaljiUpit = async () => {
   loading.value = true
   poruke.value.push({ rola: 'korisnik', tekst: trenutniUpit.value })
   try {
-    const odgovor = await axios.post('http://localhost:5000/api/ai-konfiguracija', {
+    const odgovor = await axios.post(`${import.meta.env.VITE_API_URL}/api/ai-konfiguracija`, {
       zahtjev: trenutniUpit.value,
       povijest: getPovijestPoruka()
     })
@@ -235,7 +235,7 @@ const posaljiUpit = async () => {
 onMounted(async () => {
   if (route.query.prikaziChat === 'true') prikaziChat.value = true
   try {
-    const response = await axios.get('http://localhost:5000/api/modeli')
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/modeli`)
     modeli.value = response.data
   } catch (error) {
     console.error('Greška prilikom dohvaćanja modela:', error)

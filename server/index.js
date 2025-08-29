@@ -10,7 +10,9 @@ const jwt = require("jsonwebtoken");
 const Korisnik = require("./models/Korisnik");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://FIPU-ai-car-configurator.app"]
+}));
 app.use(express.json());
 
 mongoose
@@ -450,4 +452,4 @@ app.delete("/api/konfiguracije/:korisnikId/:konfId", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server radi na http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server radi na sljedecem: ${PORT}`));

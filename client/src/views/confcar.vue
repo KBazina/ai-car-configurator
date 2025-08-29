@@ -218,7 +218,7 @@ const posaljiMail = async () => {
   }
 
   try {
-    await axios.post('http://localhost:5000/api/posalji-konfiguraciju', podaci)
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/posalji-konfiguraciju`, podaci)
     porukaPoslana.value = true
     email.value = ''
   } catch (err) {
@@ -276,7 +276,7 @@ const podaci = {
 
 
   try {
-    await axios.post('http://localhost:5000/api/konfiguracije/spremi', podaci)
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/konfiguracije/spremi`, podaci)
     porukaSpremanja.value = true
   } catch (err) {
     console.error('Greška pri spremanju konfiguracije', err)
