@@ -77,7 +77,7 @@ const registrirajSe = async () => {
     lozinka.value = ''
     greska.value = ''
   } catch (err) {
-    greska.value = err.response?.data?.message || 'Greška pri registraciji.'
+    greska.value = err.response?.data?.message 
   }
 }
 
@@ -116,10 +116,10 @@ const odjaviSe = () => {
 
 onMounted(() => {
   const stored = localStorage.getItem('token')
-  const storedIme = localStorage.getItem('user')
-  if (stored && storedIme) {
+  const user = localStorage.getItem('user')
+  if (stored && user) {
     isLoggedIn.value = true
-    ime.value = storedIme.ime
+    ime.value = JSON.parse(user).ime
   }
 })
 </script>

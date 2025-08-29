@@ -99,7 +99,7 @@ app.post("/api/register", async (req, res) => {
 
     res.status(201).json({ message: "Korisnik registriran." });
   } catch (err) {
-    res.status(500).json({ message: "Greška pri registraciji." });
+    res.status(500).json({ message: err });
   }
 });
 
