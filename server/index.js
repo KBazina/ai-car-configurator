@@ -11,7 +11,7 @@ const Korisnik = require("./models/Korisnik");
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:5173", "https://FIPU-ai-car-configurator.app"]
+  origin: ["http://localhost:5173", "https://fipu-ai-car-configurator.app"]
 }));
 app.use(express.json());
 
