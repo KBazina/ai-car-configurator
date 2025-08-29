@@ -116,10 +116,10 @@ const odjaviSe = () => {
 
 onMounted(() => {
   const stored = localStorage.getItem('token')
-  const storedIme = localStorage.getItem('ime')
+  const storedIme = localStorage.getItem('user')
   if (stored && storedIme) {
     isLoggedIn.value = true
-    ime.value = storedIme
+    ime.value = storedIme.ime
   }
 })
 </script>
